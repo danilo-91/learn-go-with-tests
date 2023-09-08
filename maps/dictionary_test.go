@@ -14,57 +14,57 @@ func TestSearch(t *testing.T) {
 	t.Run("word that does not exist", func(t *testing.T) {
 		d := Dictionary{}
 		_, err := d.Search("snorlax")
-		want := "Error: word \"snorlax\" not found!"
+        want := ErrWordNotFound
 
 		if err == nil {
 			t.Fatal("expected error")
 		}
 
-		assertStrings(t, err.Error(), want)
+		assertStrings(t, err.Error(), want.Error())
 	})
 
 }
 
 func TestAdd(t *testing.T) {
-    t.Run("add word", func(t *testing.T) {
-        d := Dictionary{}
-        word := "test"
-        want := "this is the Add test"
-        d.Add(word, want)
+	t.Run("add word", func(t *testing.T) {
+		d := Dictionary{}
+		word := "test"
+		want := "this is the Add test"
+		d.Add(word, want)
 
-        got, err := d.Search(word)
+		got, err := d.Search(word)
 
-        if err != nil {
-            t.Fatal(err.Error())
-        }
+		if err != nil {
+			t.Fatal(err.Error())
+		}
 
-        assertStrings(t, got, want)
-    })
+		assertStrings(t, got, want)
+	})
 
-    t.Run("error on repeated word", func(t *testing.T) {
-        d := Dictionary{}
-        word := "test"
-        def := "test already set"
+	t.Run("error on repeated word", func(t *testing.T) {
+		d := Dictionary{}
+		word := "test"
+		def := "test already set"
 
-        ok := d.Add(word, def)
+		err := d.Add(word, def)
 
-        if !ok {
-            t.Fatal("word should be added")
-        }
+		if err != nil {
+			t.Fatal("Word should be added to empty dictionary")
+		}
 
-        // Now let's make a mistake
+		// Now let's make a mistake
 
-        ok = d.Add(word, "this shouldn't be here")
+		err = d.Add(word, "this shouldn't be here")
 
-        if ok {
-            t.Fatal("word should not change!")
-        }
+		if err == nil {
+			t.Fatal("word should not change!")
+		}
 
-        // Check definition still the same
-        got, _ := d.Search(word)
+		// Check definition still the same
+		got, _ := d.Search(word)
 
-        assertStrings(t, got, def)
-    })
+		assertStrings(t, got, def)
+	})
 }
 
 func assertStrings(t testing.TB, got, want string) {
