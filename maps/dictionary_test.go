@@ -14,13 +14,13 @@ func TestSearch(t *testing.T) {
 	t.Run("word that does not exist", func(t *testing.T) {
 		d := Dictionary{}
 		_, err := d.Search("snorlax")
-        want := ErrWordNotFound
+		want := ErrWordNotFound
 
 		if err == nil {
 			t.Fatal("expected error")
 		}
 
-		assertStrings(t, err.Error(), want.Error())
+		assertError(t, err, want)
 	})
 
 }
@@ -34,10 +34,7 @@ func TestAdd(t *testing.T) {
 
 		got, err := d.Search(word)
 
-		if err != nil {
-			t.Fatal(err.Error())
-		}
-
+		assertError(t, err, nil)
 		assertStrings(t, got, want)
 	})
 
@@ -48,17 +45,13 @@ func TestAdd(t *testing.T) {
 
 		err := d.Add(word, def)
 
-		if err != nil {
-			t.Fatal("Word should be added to empty dictionary")
-		}
+		assertError(t, err, nil)
 
 		// Now let's make a mistake
 
 		err = d.Add(word, "this shouldn't be here")
 
-		if err == nil {
-			t.Fatal("word should not change!")
-		}
+		assertError(t, err, ErrWordExists)
 
 		// Check definition still the same
 		got, _ := d.Search(word)
@@ -67,9 +60,55 @@ func TestAdd(t *testing.T) {
 	})
 }
 
+func TestUpdate(t *testing.T) {
+	t.Run("existing word", func(t *testing.T) {
+		word := "test"
+		def := "this is a test"
+		updated := "this a updated test"
+		d := Dictionary{word: def}
+		d.Update(word, updated)
+
+		got, _ := d.Search(word)
+		assertStrings(t, got, updated)
+	})
+
+	t.Run("non existing word", func(t *testing.T) {
+		word := "test"
+		updated := "this is a updated test"
+		d := Dictionary{}
+		err := d.Update(word, updated)
+
+		assertError(t, err, ErrWordDoesNotExists)
+	})
+
+}
+
+func TestDelete(t *testing.T) {
+	t.Run("existing word", func(t *testing.T) {
+		word := "test"
+		def := "this is a test"
+		d := Dictionary{word: def}
+
+		err := d.Delete(word)
+
+		assertError(t, err, nil)
+
+		_, err = d.Search(word)
+
+		assertError(t, err, ErrWordNotFound)
+	})
+}
+
 func assertStrings(t testing.TB, got, want string) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got %q, but wanted %q", got, want)
+	}
+}
+
+func assertError(t testing.TB, got, want error) {
+	t.Helper()
+	if got != want {
+		t.Errorf("got %q but want %q", got, want)
 	}
 }
