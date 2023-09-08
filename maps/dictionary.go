@@ -13,6 +13,15 @@ func (d Dictionary) Search(s string) (string, error) {
 	return word, nil
 }
 
+func (d Dictionary) Add(word, definition string) bool {
+    _, ok := d[word]
+    if ok {
+        return false
+    }
+    d[word] = definition
+    return true
+}
+
 type ErrWordNotFound string
 
 func (e ErrWordNotFound) Error() string {

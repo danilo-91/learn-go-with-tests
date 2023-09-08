@@ -25,6 +25,48 @@ func TestSearch(t *testing.T) {
 
 }
 
+func TestAdd(t *testing.T) {
+    t.Run("add word", func(t *testing.T) {
+        d := Dictionary{}
+        word := "test"
+        want := "this is the Add test"
+        d.Add(word, want)
+
+        got, err := d.Search(word)
+
+        if err != nil {
+            t.Fatal(err.Error())
+        }
+
+        assertStrings(t, got, want)
+    })
+
+    t.Run("error on repeated word", func(t *testing.T) {
+        d := Dictionary{}
+        word := "test"
+        def := "test already set"
+
+        ok := d.Add(word, def)
+
+        if !ok {
+            t.Fatal("word should be added")
+        }
+
+        // Now let's make a mistake
+
+        ok = d.Add(word, "this shouldn't be here")
+
+        if ok {
+            t.Fatal("word should not change!")
+        }
+
+        // Check definition still the same
+        got, _ := d.Search(word)
+
+        assertStrings(t, got, def)
+    })
+}
+
 func assertStrings(t testing.TB, got, want string) {
 	t.Helper()
 	if got != want {
