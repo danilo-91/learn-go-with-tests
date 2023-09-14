@@ -2,16 +2,25 @@ package main
 
 import (
     "net/http"
+    "fmt"
+    "time"
 )
 
-func Racer(url1, url2 string) string {
+func Racer(url1, url2 string) (string, error) {
+    return ConfigurableRacer(url1, url2, 10*time.Second)
+}
+
+func ConfigurableRacer(url1, url2 string, timeout time.Duration) (string, error) {
     select {
     case <- ping(url1):
-        return url1
+        return url1, nil
     case <- ping(url2):
-        return url2
+        return url2, nil
+    case <- time.After(timeout):
+        return "", fmt.Errorf("timed out waiting for %s and %s", url1, url2)
     }
 }
+
 
 func ping(url string) chan struct{} {
     ch := make(chan struct{})
