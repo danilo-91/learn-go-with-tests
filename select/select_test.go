@@ -10,6 +10,8 @@ import (
 func TestRacer(t *testing.T) {
     slowServer := delayedServer(20 * time.Millisecond)
     fastServer := delayedServer(0 * time.Millisecond)
+    defer slowServer.Close()
+    defer fastServer.Close()
 
     slowURL := slowServer.URL
     fastURL := fastServer.URL
