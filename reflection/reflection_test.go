@@ -1,29 +1,37 @@
 package main
 
 import (
-    "testing"
-    "fmt"
+	"testing"
+    "reflect"
 )
 
 func TestWalk(t *testing.T) {
 
-    expected := "Something else"
-    var got []string
+	cases := []struct {
+		name     string
+		input    interface{}
+		expected []string
+	}{
+		{
+			"struct with one string",
+			struct {
+				Name string
+			}{"Danilo"},
+			[]string{"Danilo"},
+		},
+	}
 
-    x := struct {
-        Name string
-    }{expected}
+	for _, test := range cases {
+		t.Run(test.name, func(t *testing.T) {
+			var got []string
 
-    walk(x, func (input string) {
-        got = append(got, input)
-    })
-    fmt.Println("got: ", got)
+			walk(test.input, func(input string) {
+				got = append(got, input)
+			})
 
-    if len(got) != 1 {
-        t.Errorf("expected %d function calls, but got %d", 1, len(got))
-    }
-
-    if got[0] != expected {
-        t.Errorf("expected %q, but gotten %q", expected, got[0])
-    }
+			if !reflect.DeepEqual(got, test.expected) {
+				t.Errorf("expected %v, but got %v", test.expected, got)
+			}
+		})
+	}
 }
