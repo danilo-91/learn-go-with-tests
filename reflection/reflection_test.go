@@ -1,9 +1,19 @@
 package main
 
 import (
+	"reflect"
 	"testing"
-    "reflect"
 )
+
+type Person struct {
+	Name    string
+	Profile Profile
+}
+
+type Profile struct {
+	Address string
+	Age     int
+}
 
 func TestWalk(t *testing.T) {
 
@@ -18,6 +28,46 @@ func TestWalk(t *testing.T) {
 				Name string
 			}{"Danilo"},
 			[]string{"Danilo"},
+		},
+		{
+			"struct with two strings",
+			struct {
+				Name    string
+				Address string
+			}{"Danilo", "Santiago"},
+			[]string{"Danilo", "Santiago"},
+		},
+		{
+			"struct with one no-string field",
+			struct {
+				Name string
+				Age  int
+			}{"Danilo", 30},
+			[]string{"Danilo"},
+		},
+		{
+			"struct with nested struct",
+			Person{
+				"Danilo",
+				Profile{"Santiago", 32},
+			},
+			[]string{"Danilo", "Santiago"},
+		},
+		{
+			"pointer to struct",
+			&Person{
+				"Danilo",
+				Profile{"Santiago", 32},
+			},
+			[]string{"Danilo", "Santiago"},
+		},
+		{
+			"slice",
+			[]Profile{
+				{"Santiago", 32},
+				{"Vancouver", 33},
+			},
+			[]string{"Santiago", "Vancouver"},
 		},
 	}
 
