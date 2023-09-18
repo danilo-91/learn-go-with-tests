@@ -1,13 +1,20 @@
 package counter
 
+import (
+	"sync"
+)
+
 type Counter struct {
-    val int
+	mu  sync.Mutex
+	val int
 }
 
 func (c *Counter) Inc() {
-    c.val += 1
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.val += 1
 }
 
 func (c *Counter) Value() int {
-    return c.val
+	return c.val
 }
