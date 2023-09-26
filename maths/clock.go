@@ -16,6 +16,7 @@ func SecondHand(t time.Time) Point {
 	return Point{150, 60}
 }
 
+// Convert a time.Time.Second() to radians
 func SecToRadian(t time.Time) float64 {
-	return math.Pi
+	return math.Pi / (30 / float64(t.Second()))
 }
