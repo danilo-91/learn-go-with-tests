@@ -7,19 +7,20 @@ import (
 )
 
 func TestSecondHand(t *testing.T) {
-	t.Run("midnight", func(t *testing.T) {
-		hour := time.Date(1337, time.January, 1, 0, 0, 0, 0, time.UTC)
-		want := Point{X: 150, Y: 150 - 90}
-		got := SecondHand(hour)
-		assertPoints(t, got, want)
-	})
+    cases := []struct{
+        time time.Time
+        point Point
+    }{
+        {simpleTime(0, 0, 30), Point{0, -1}},
+    }
 
-	t.Run("6 o'clock", func(t *testing.T) {
-		hour := time.Date(1337, time.January, 1, 6, 0, 0, 0, time.UTC)
-		want := Point{X: 150, Y: 150 + 90}
-		got := SecondHand(hour)
-		assertPoints(t, got, want)
-	})
+    for _, c := range cases {
+        t.Run(timeName(c.time), func(t *testing.T) {
+            got := SecondHand(c.time)
+            want := c.point
+            assertPoint(t, got, want)
+        })
+    }
 }
 
 func TestSecToRadian(t *testing.T) {
@@ -41,7 +42,7 @@ func TestSecToRadian(t *testing.T) {
 	}
 }
 
-func assertPoints(t testing.TB, got, want Point) {
+func assertPoint(t testing.TB, got, want Point) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got %v, wanted %v", got, want)

@@ -13,7 +13,7 @@ type Point struct {
 
 // Returns the second point of the hour hand of an analogue clock
 func SecondHand(t time.Time) Point {
-	return Point{150, 60}
+	return Point{0, -1}
 }
 
 // Convert a time.Time.Second() to radians
