@@ -3,6 +3,8 @@ package clock
 import (
 	"math"
 	"testing"
+    "bytes"
+    "encoding/xml"
 	"time"
 )
 
@@ -61,6 +63,25 @@ func TestSecToRadian(t *testing.T) {
 	}
 }
 
+func TestSVGWriterAtMidnight(t *testing.T) {
+	tm := simpleTime(0, 0, 0)
+	b := bytes.Buffer{}
+	SVGWriter(&b, tm)
+
+	svg := SVG{}
+	xml.Unmarshal(b.Bytes(), &svg)
+
+	x2 := "150.000"
+	y2 := "60.000"
+
+	for _, line := range svg.Line {
+		if line.X2 == x2 && line.Y2 == y2 {
+			return
+		}
+	}
+	t.Errorf("Expected second hand x2 = %+v and y2 = %+v from SVG o %v", x2, y2, b.String())
+}
+
 func assertPoint(t testing.TB, got, want Point) {
 	t.Helper()
 	if !approxEqualPoint(got, want) {
@@ -93,4 +114,29 @@ func approxEqual(a, b float64) bool {
 func approxEqualPoint(a, b Point) bool {
 	return approxEqual(a.X, b.X) &&
 		approxEqual(a.Y, b.Y)
+}
+
+type SVG struct {
+	XMLName xml.Name `xml:"svg"`
+	Text    string   `xml:",chardata"`
+	Xmlns   string   `xml:"xmlns,attr"`
+	Width   string   `xml:"width,attr"`
+	Height  string   `xml:"height,attr"`
+	ViewBox string   `xml:"viewBox,attr"`
+	Version string   `xml:"version,attr"`
+	Circle  struct {
+		Text  string `xml:",chardata"`
+		Cx    string `xml:"cx,attr"`
+		Cy    string `xml:"cy,attr"`
+		R     string `xml:"r,attr"`
+		Style string `xml:"style,attr"`
+	} `xml:"circle"`
+	Line []struct {
+		Text  string `xml:",chardata"`
+		X1    string `xml:"x1,attr"`
+		Y1    string `xml:"y1,attr"`
+		X2    string `xml:"x2,attr"`
+		Y2    string `xml:"y2,attr"`
+		Style string `xml:"style,attr"`
+	} `xml:"line"`
 }
