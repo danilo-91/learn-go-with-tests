@@ -11,9 +11,12 @@ type Point struct {
 	Y float64
 }
 
-// Returns the second point of the hour hand of an analogue clock
-func SecondHand(t time.Time) Point {
-	return Point{0, -1}
+// Returns the top point {X Y} of the second hand of an analogue clock
+func SecondHandPoint(t time.Time) Point {
+	angle := SecToRadian(t)
+	X := math.Sin(angle)
+	Y := math.Cos(angle)
+	return Point{X, Y}
 }
 
 // Convert a time.Time.Second() to radians
