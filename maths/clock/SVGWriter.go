@@ -1,10 +1,9 @@
 package clock
 
 import (
-
-    "time"
-    "io"
-    "fmt"
+	"fmt"
+	"io"
+	"time"
 )
 
 // Writes an SVG representation of an analogue clock, with time t, to writer w

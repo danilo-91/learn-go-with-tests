@@ -8,5 +8,5 @@ import (
 
 func main() {
 	t := time.Now()
-    clock.SVGWriter(os.Stdout, t)
+	clock.SVGWriter(os.Stdout, t)
 }
