@@ -12,11 +12,17 @@ func SVGWriter(w io.Writer, t time.Time) {
 	io.WriteString(w, bezel)
 	p := SecondHand(t)
 	io.WriteString(w, svgSecond(p))
+    p = MinuteHand(t)
+    io.WriteString(w, svgMinute(p))
 	io.WriteString(w, svgEnd)
 }
 
 func svgSecond(p Point) string {
 	return fmt.Sprintf(`<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#f00;stroke-width:3px;"/>`, p.X, p.Y)
+}
+
+func svgMinute(p Point) string {
+	return fmt.Sprintf(`<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#000;stroke-width:3px;"/>`, p.X, p.Y)
 }
 
 const (

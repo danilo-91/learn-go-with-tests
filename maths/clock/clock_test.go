@@ -9,26 +9,65 @@ import (
 )
 
 func TestSVGWriterMinuteHand(t *testing.T) {
+	cases := []struct {
+		time time.Time
+		line Line
+	}{
+		{simpleTime(0, 0, 0), Line{150, 150, 150, 70}},
+	}
+
+	for _, c := range cases {
+		t.Run(timeName(c.time), func(t *testing.T) {
+			b := bytes.Buffer{}
+			SVGWriter(&b, c.time)
+
+			svg := SVG{}
+			xml.Unmarshal(b.Bytes(), &svg)
+
+			if !containsLine(c.line, svg.Lines) {
+				t.Errorf("expected the line for minute hand %+v, from SVG lines %+v", c.line, svg.Lines)
+			}
+		})
+	}
+}
+
+// Test to check unit Point{}, before scale flip and translate
+func TestMinuteHandPoint(t *testing.T) {
     cases := []struct{
         time time.Time
-        line Line
+        point Point
     }{
-        {simpleTime(0, 0, 0), Line{150, 150, 150, 70}},
+        {simpleTime(0, 30, 0), Point{0, -1}},
+        {simpleTime(0, 45, 0), Point{-1, 0}},
     }
 
     for _, c := range cases {
-        t.Run(timeName(c.time), func (t *testing.T) {
-            b := bytes.Buffer{}
-            SVGWriter(&b, c.time)
-
-            svg := SVG{}
-            xml.Unmarshal(b.Bytes(), &svg)
-
-            if !containsLine(c.line, svg.Lines) {
-                t.Errorf("wanted minute hand %+v, from SVG %+v", c.line, svg.Lines)
-            }
+        t.Run(timeName(c.time), func(t *testing.T) {
+            got := MinuteHandPoint(c.time)
+            want := c.point
+            assertPoint(t, got, want)
         })
     }
+}
+
+
+// Tests to check that minutes are converted to radians
+func TestMinToRadian(t *testing.T) {
+	cases := []struct {
+		time  time.Time
+		angle float64
+	}{
+		{simpleTime(0, 30, 0), math.Pi},
+		{simpleTime(0, 0, 7), 7 * (math.Pi / (30 * 60))},
+	}
+
+	for _, c := range cases {
+		t.Run(timeName(c.time), func(t *testing.T) {
+			want := c.angle
+			got := MinToRadian(c.time)
+			assertFloat64(t, want, got)
+		})
+	}
 }
 
 func TestSecondHand(t *testing.T) {
@@ -102,9 +141,9 @@ func TestSVGWriter(t *testing.T) {
 			svg := SVG{}
 			xml.Unmarshal(b.Bytes(), &svg)
 
-            if !containsLine(c.line, svg.Lines) {
-                t.Errorf("wanted %+v, from SVG %+v", c.line, svg.Lines)
-            }
+			if !containsLine(c.line, svg.Lines) {
+				t.Errorf("wanted %+v, from SVG %+v", c.line, svg.Lines)
+			}
 		})
 	}
 }
@@ -144,12 +183,12 @@ func approxEqualPoint(a, b Point) bool {
 }
 
 func containsLine(want Line, got []Line) bool {
-    for _, line := range got {
+	for _, line := range got {
 		if line == want {
 			return true
 		}
 	}
-    return false
+	return false
 }
 
 type SVG struct {
@@ -160,7 +199,7 @@ type SVG struct {
 	ViewBox string   `xml:"viewBox,attr"`
 	Version string   `xml:"version,attr"`
 	Circle  Circle   `xml:"circle"`
-	Lines    []Line   `xml:"line"`
+	Lines   []Line   `xml:"line"`
 }
 
 type Circle struct {
