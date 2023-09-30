@@ -12,7 +12,9 @@ func SVGWriter(w io.Writer, t time.Time) {
 	io.WriteString(w, bezel)
 	p := SecondHand(t)
 	io.WriteString(w, svgSecond(p))
-    p = MinuteHand(t)
+	p = MinuteHand(t)
+	io.WriteString(w, svgMinute(p))
+    p = HourHand(t)
     io.WriteString(w, svgMinute(p))
 	io.WriteString(w, svgEnd)
 }

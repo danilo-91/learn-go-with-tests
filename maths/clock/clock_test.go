@@ -8,6 +8,70 @@ import (
 	"time"
 )
 
+func TestSVGWriterHourHand(t *testing.T) {
+	cases := []struct {
+		time time.Time
+		line Line
+	}{
+		{
+			simpleTime(6, 0, 0),
+			Line{150, 150, 150, 200},
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(timeName(c.time), func(t *testing.T) {
+			b := bytes.Buffer{}
+			SVGWriter(&b, c.time)
+
+			svg := SVG{}
+			xml.Unmarshal(b.Bytes(), &svg)
+
+			if !containsLine(c.line, svg.Lines) {
+				t.Errorf("Wanted line for hour hand %+v, from SVG containing lines %+v", c.line, svg.Lines)
+			}
+		})
+	}
+}
+
+func TestHourHandPoint(t *testing.T) {
+    cases := []struct{
+        time time.Time
+        point Point
+    }{
+        {simpleTime(6, 0, 0), Point{0, -1}},
+        {simpleTime(21, 0, 0), Point{-1, 0}},
+    }
+
+    for _, c := range cases {
+        t.Run(timeName(c.time), func(t *testing.T) {
+            got := HourHandPoint(c.time)
+            want := c.point
+            assertPoint(t, got, want)
+        })
+    }
+}
+
+func TestHourToRadian(t *testing.T) {
+	cases := []struct {
+		time  time.Time
+		angle float64
+	}{
+		{simpleTime(6, 0, 0), math.Pi},
+		{simpleTime(0, 0, 0), 0},
+        {simpleTime(21, 0, 0), math.Pi * 1.5},
+		{simpleTime(0, 1, 30), math.Pi / ((6 * 60 * 60) / 90)},
+	}
+
+	for _, c := range cases {
+		t.Run(timeName(c.time), func(t *testing.T) {
+			got := HourToRadian(c.time)
+			want := c.angle
+			assertFloat64(t, got, want)
+		})
+	}
+}
+
 func TestSVGWriterMinuteHand(t *testing.T) {
 	cases := []struct {
 		time time.Time
@@ -33,23 +97,22 @@ func TestSVGWriterMinuteHand(t *testing.T) {
 
 // Test to check unit Point{}, before scale flip and translate
 func TestMinuteHandPoint(t *testing.T) {
-    cases := []struct{
-        time time.Time
-        point Point
-    }{
-        {simpleTime(0, 30, 0), Point{0, -1}},
-        {simpleTime(0, 45, 0), Point{-1, 0}},
-    }
+	cases := []struct {
+		time  time.Time
+		point Point
+	}{
+		{simpleTime(0, 30, 0), Point{0, -1}},
+		{simpleTime(0, 45, 0), Point{-1, 0}},
+	}
 
-    for _, c := range cases {
-        t.Run(timeName(c.time), func(t *testing.T) {
-            got := MinuteHandPoint(c.time)
-            want := c.point
-            assertPoint(t, got, want)
-        })
-    }
+	for _, c := range cases {
+		t.Run(timeName(c.time), func(t *testing.T) {
+			got := MinuteHandPoint(c.time)
+			want := c.point
+			assertPoint(t, got, want)
+		})
+	}
 }
-
 
 // Tests to check that minutes are converted to radians
 func TestMinToRadian(t *testing.T) {
@@ -63,9 +126,9 @@ func TestMinToRadian(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(timeName(c.time), func(t *testing.T) {
-			want := c.angle
 			got := MinToRadian(c.time)
-			assertFloat64(t, want, got)
+			want := c.angle
+			assertFloat64(t, got, want)
 		})
 	}
 }
@@ -157,7 +220,7 @@ func assertPoint(t testing.TB, got, want Point) {
 
 func assertFloat64(t testing.TB, got, want float64) {
 	t.Helper()
-	if got != want {
+	if !approxEqual(got, want) {
 		t.Errorf("got %v, but wanted %v", got, want)
 	}
 }
