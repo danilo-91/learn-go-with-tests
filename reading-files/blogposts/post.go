@@ -14,18 +14,25 @@ func getPost(fsys fs.FS, name string) (Post, error) {
 	return readPost(file)
 }
 
+const (
+    titleSeparator = "Title: "
+    descSeparator = "Description: "
+)
+
 func readPost(f fs.File) (Post, error) {
     scanner := bufio.NewScanner(f)
 
-    scanner.Scan()
-    titleLine := scanner.Text()
+    readLine := func() string {
+        scanner.Scan()
+        return scanner.Text()
+    }
 
-    scanner.Scan()
-    descriptionLine := scanner.Text()
+    title := readLine()
+    description := readLine()
 
 	post := Post{
-        Title: titleLine[7:],
-        Description: descriptionLine[13:],
+        Title: title[len(titleSeparator):],
+        Description: description[len(descSeparator):],
     }
 	return post, nil
 }
