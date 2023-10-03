@@ -1,7 +1,7 @@
 package blogposts
 
 import (
-	"io"
+    "bufio"
 	"io/fs"
 )
 
@@ -15,10 +15,17 @@ func getPost(fsys fs.FS, name string) (Post, error) {
 }
 
 func readPost(f fs.File) (Post, error) {
-	data, err := io.ReadAll(f)
-	if err != nil {
-		return Post{}, err
-	}
-	post := Post{Title: string(data)[7:]}
+    scanner := bufio.NewScanner(f)
+
+    scanner.Scan()
+    titleLine := scanner.Text()
+
+    scanner.Scan()
+    descriptionLine := scanner.Text()
+
+	post := Post{
+        Title: titleLine[7:],
+        Description: descriptionLine[13:],
+    }
 	return post, nil
 }
