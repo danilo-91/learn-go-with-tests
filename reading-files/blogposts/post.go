@@ -28,27 +28,33 @@ const (
 func readPost(f fs.File) (Post, error) {
 	scanner := bufio.NewScanner(f)
 
-	readLine := func(prefix string) string {
-		scanner.Scan()
-		return strings.TrimPrefix(scanner.Text(), prefix)
-	}
-
-    title := readLine(tPrefix)
-    desc := readLine(dPrefix)
-    tags := strings.Split(readLine(tagsPrefix), ", ")
-
-    readLine("") // skip line of "---"
-
-    buf := bytes.Buffer{}
-    for scanner.Scan() {
-        fmt.Fprintln(&buf, scanner.Text())
-    }
-    body := strings.TrimSuffix(buf.String(), "\n")
-
 	return Post{
-        Title: title,
-        Description: desc,
-        Tags: tags,
-        Body: body,
+        Title: readLine(tPrefix, scanner),
+        Description: readLine(dPrefix, scanner),
+        Tags: readTags(tagsPrefix, scanner),
+        Body: readBody(scanner),
     }, nil
+}
+
+// Use &scanner to extract text from file, trim prefix an return string
+func readLine(prefix string, sc *bufio.Scanner) string {
+    sc.Scan()
+    return strings.TrimPrefix(sc.Text(), prefix)
+}
+
+// Use &scanner to extract text, trim prefix and split to []string
+func readTags(prefix string, sc *bufio.Scanner) []string {
+    sc.Scan()
+    return strings.Split(strings.TrimPrefix(sc.Text(), prefix), ", ")
+}
+
+// Use &scanner to skip "---" and extract entire body
+func readBody(sc *bufio.Scanner) string {
+    sc.Scan() // skip "---"
+
+    b := bytes.Buffer{}
+    for sc.Scan() {
+        fmt.Fprintln(&b, sc.Text())
+    }
+    return strings.TrimSuffix(b.String(), "\n")
 }
