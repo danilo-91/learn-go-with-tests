@@ -1,10 +1,14 @@
 package blogposts
 
 import (
-    "bufio"
+	"bufio"
 	"io/fs"
+	"strings"
+    "fmt"
+    "bytes"
 )
 
+// Open post file using name from fileSystem fsys
 func getPost(fsys fs.FS, name string) (Post, error) {
 	file, err := fsys.Open(name)
 	if err != nil {
@@ -15,24 +19,36 @@ func getPost(fsys fs.FS, name string) (Post, error) {
 }
 
 const (
-    titleSeparator = "Title: "
-    descSeparator = "Description: "
+	tPrefix = "Title: "
+	dPrefix  = "Description: "
+    tagsPrefix = "Tags: "
 )
 
+// Scan file data to fetch post
 func readPost(f fs.File) (Post, error) {
-    scanner := bufio.NewScanner(f)
+	scanner := bufio.NewScanner(f)
 
-    readLine := func() string {
-        scanner.Scan()
-        return scanner.Text()
+	readLine := func(prefix string) string {
+		scanner.Scan()
+		return strings.TrimPrefix(scanner.Text(), prefix)
+	}
+
+    title := readLine(tPrefix)
+    desc := readLine(dPrefix)
+    tags := strings.Split(readLine(tagsPrefix), ", ")
+
+    readLine("") // skip line of "---"
+
+    buf := bytes.Buffer{}
+    for scanner.Scan() {
+        fmt.Fprintln(&buf, scanner.Text())
     }
+    body := strings.TrimSuffix(buf.String(), "\n")
 
-    title := readLine()
-    description := readLine()
-
-	post := Post{
-        Title: title[len(titleSeparator):],
-        Description: description[len(descSeparator):],
-    }
-	return post, nil
+	return Post{
+        Title: title,
+        Description: desc,
+        Tags: tags,
+        Body: body,
+    }, nil
 }

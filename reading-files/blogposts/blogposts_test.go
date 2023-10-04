@@ -13,9 +13,17 @@ func TestNewBlogPosts(t *testing.T) {
 	t.Run("2 files", func(t *testing.T) {
 		const (
 			post1Body = `Title: Post 1
-Description: Description 1`
+Description: Description 1
+Tags: tdd, go
+---
+Hello,
+World!`
 			post2Body = `Title: Post 2
-Description: Description 2`
+Description: Description 2
+Tags: rust, borrow-checker
+---
+Hello, now from Post 2!
+This is another Post.`
 		)
 
 		fsys := fstest.MapFS{
@@ -32,6 +40,9 @@ Description: Description 2`
 		want := blogposts.Post{
 			Title:       "Post 1",
 			Description: "Description 1",
+            Tags: []string{"tdd", "go"},
+            Body: `Hello,
+World!`,
 		}
 		assertPosts(t, got, want)
 	})
@@ -56,6 +67,6 @@ func (fs failingFS) Open(name string) (fs.File, error) {
 func assertPosts(t *testing.T, got, want blogposts.Post) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %+v, but wanted %+v", got, want)
+		t.Errorf("got %+v, but wanted %+v", got.Body, want.Body)
 	}
 }
