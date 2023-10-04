@@ -25,7 +25,9 @@ func TestRender(t *testing.T) {
         }
 
         got := b.String()
-        want := `<h1>hello world</h1>`
+        want := `<h1>hello world</h1>
+<p>This is a description</p>
+<p>Tags: <ul><li>go</li><li>tdd</li></ul></p>`
 
         if got != want {
             t.Errorf("wanted %q, but got %q", want, got)
