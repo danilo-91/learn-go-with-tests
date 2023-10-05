@@ -1,30 +1,30 @@
 package blogrenderer
 
 import (
-    "io"
-    "fmt"
+	"embed"
+	"html/template"
+	"io"
+)
+
+var (
+    //go:embed "templates/*"
+	postTemplates embed.FS
 )
 
 func Render(w io.Writer, p Post) error {
-    title := `<h1>%s</h1>
-`
-    desc := `<p>%s</p>
-`
-    tags := `<p>Tags: <ul>`
+	t, err := template.ParseFS(postTemplates, "templates/*.gohtml")
+	if err != nil {
+		return err
+	}
 
-    _, err := fmt.Fprintf(w, title, p.Title)
-    _, err = fmt.Fprintf(w, desc, p.Description)
+	if err := t.Execute(w, p); err != nil {
+		return err
+	}
 
-    for _, t := range p.Tags {
-        tags += fmt.Sprintf(`<li>%s</li>`, t)
-    }
-    tags += `</ul></p>`
-    _, err = fmt.Fprintf(w, tags)
-
-    return err
+	return nil
 }
 
 type Post struct {
-    Title, Body, Description string
-    Tags []string
+	Title, Body, Description string
+	Tags                     []string
 }
