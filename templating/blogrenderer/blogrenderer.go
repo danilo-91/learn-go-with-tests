@@ -7,17 +7,25 @@ import (
 )
 
 var (
-    //go:embed "templates/*"
+	//go:embed "templates/*"
 	postTemplates embed.FS
 )
 
-func Render(w io.Writer, p Post) error {
+type PostRenderer struct {
+	t *template.Template
+}
+
+func NewPostRenderer() (*PostRenderer, error) {
 	t, err := template.ParseFS(postTemplates, "templates/*.gohtml")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if err := t.Execute(w, p); err != nil {
+	return &PostRenderer{t: t}, nil
+}
+
+func (r *PostRenderer) Render(wr io.Writer, p Post) error {
+	if err := r.t.ExecuteTemplate(wr, "post.gohtml", p); err != nil {
 		return err
 	}
 
