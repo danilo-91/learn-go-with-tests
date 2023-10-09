@@ -23,6 +23,13 @@
 
 <p>This is a description.</p>
 
+<p><h1>Body Title</h1>
+
+<p>This is the body of the post.</p>
+
+<p>A little link <a href="https://github.com/isedaniel">here</a>.</p>
+</p>
+
 Tags: <ul><li>go</li><li>tdd</li></ul>
 
 </main>
