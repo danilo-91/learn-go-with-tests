@@ -38,6 +38,24 @@ A little link [here](github.com/isedaniel).`
 
 		approvals.VerifyString(t, b.String())
 	})
+
+    t.Run("render index of posts", func(t *testing.T) {
+        b := bytes.Buffer{}
+        posts := []blogrenderer.Post{
+            {Title: "Hello, World!"},
+            {Title: "Goodbye, Mars?"},
+        }
+        if err := pr.RenderIndex(&b, posts); err != nil {
+            t.Fatal(err)
+        }
+
+        got := b.String()
+        want := `<ol><li><a href="/post/hello-world">Hello World</a></li><li><a href="/post/hello-world-2">Hello World 2</a></li></ol>`
+
+        if got != want {
+            t.Errorf("got %q, but wanted %q", got, want)
+        }
+    })
 }
 
 func BenchmarkRender(b *testing.B) {

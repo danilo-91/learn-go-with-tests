@@ -23,7 +23,12 @@
 
 <p>This is a description.</p>
 
-<p>This is the body of the post.</p>
+<p>&lt;h1 id=&#34;body-title&#34;&gt;Body Title&lt;/h1&gt;
+
+&lt;p&gt;This is the body of the post.&lt;/p&gt;
+
+&lt;p&gt;A little link &lt;a href=&#34;github.com/isedaniel&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</p>
 
 Tags: <ul><li>go</li><li>tdd</li></ul>
 
