@@ -2,11 +2,11 @@ package blogrenderer
 
 import (
 	"embed"
+	"github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown/parser"
 	"html/template"
 	"io"
 	"strings"
-
-	"github.com/isedaniel/md"
 )
 
 var (
@@ -15,7 +15,8 @@ var (
 )
 
 type PostRenderer struct {
-	t *template.Template
+	t        *template.Template
+	mdParser *parser.Parser
 }
 
 func NewPostRenderer() (*PostRenderer, error) {
@@ -24,32 +25,15 @@ func NewPostRenderer() (*PostRenderer, error) {
 		return nil, err
 	}
 
-	return &PostRenderer{t: t}, nil
+	return &PostRenderer{t: t, mdParser: parser.New()}, nil
 }
 
 func (r *PostRenderer) Render(wr io.Writer, p Post) error {
-    // Render body from MD to HTML
-    newBody := string(md.MdToHtml([]byte(p.Body)))
-    p.Body = newBody
-
-	if err := r.t.ExecuteTemplate(wr, "post.gohtml", p); err != nil {
-		return err
-	}
-
-	return nil
+	return r.t.ExecuteTemplate(wr, "post.gohtml", newPostVM(p, r))
 }
 
 func (r *PostRenderer) RenderIndex(wr io.Writer, p []Post) error {
-    indexTemplate := `<ol>{{range .}}<li><a href="/post/{{.SanitisedTitle}}">{{.Title}}</a></li>{{end}}</ol>`
-    t, err := template.New("index").Parse(indexTemplate)
-    if err != nil {
-        return err
-    }
-
-    if err := t.Execute(wr, p); err != nil {
-        return err
-    }
-    return nil
+	return r.t.ExecuteTemplate(wr, "index.gohtml", p)
 }
 
 type Post struct {
@@ -58,5 +42,16 @@ type Post struct {
 }
 
 func (p Post) SanitisedTitle() string {
-    return strings.ToLower(strings.Replace(p.Title, " ", "-", -1))
+	return strings.ToLower(strings.Replace(p.Title, " ", "-", -1))
+}
+
+type postViewModel struct {
+	Post
+	HTMLBody template.HTML
+}
+
+func newPostVM(p Post, r *PostRenderer) postViewModel {
+	vm := postViewModel{Post: p}
+	vm.HTMLBody = template.HTML(markdown.ToHTML([]byte(p.Body), r.mdParser, nil))
+	return vm
 }

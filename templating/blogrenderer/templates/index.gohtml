@@ -1,1 +1,3 @@
-<ol>{{range .}}<li><a href="/post/{{.SanitisedTitle}}">{{.Title}}</a></li>{{end}}</ol>
+{{template "top" .}}
+Index: <ul>{{range .}}<li><a href="./post/{{.SanitisedTitle}}">{{.Title}}</a></li>{{end}}</ul>
+{{template "bottom" .}}
