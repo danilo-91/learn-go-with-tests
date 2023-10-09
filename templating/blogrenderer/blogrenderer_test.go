@@ -42,8 +42,8 @@ A little link [here](github.com/isedaniel).`
     t.Run("render index of posts", func(t *testing.T) {
         b := bytes.Buffer{}
         posts := []blogrenderer.Post{
-            {Title: "Hello, World!"},
-            {Title: "Goodbye, Mars?"},
+            {Title: "Hello World"},
+            {Title: "Hello World 2"},
         }
         if err := pr.RenderIndex(&b, posts); err != nil {
             t.Fatal(err)
