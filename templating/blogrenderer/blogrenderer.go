@@ -2,8 +2,11 @@ package blogrenderer
 
 import (
 	"embed"
+	"fmt"
 	"html/template"
 	"io"
+
+	"github.com/isedaniel/md"
 )
 
 var (
@@ -25,6 +28,11 @@ func NewPostRenderer() (*PostRenderer, error) {
 }
 
 func (r *PostRenderer) Render(wr io.Writer, p Post) error {
+    // Render body from MD to HTML
+    newBody := string(md.MdToHtml([]byte(p.Body)))
+    p.Body = newBody
+    fmt.Println(p.Body)
+
 	if err := r.t.ExecuteTemplate(wr, "post.gohtml", p); err != nil {
 		return err
 	}

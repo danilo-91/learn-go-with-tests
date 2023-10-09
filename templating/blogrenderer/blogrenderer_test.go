@@ -4,27 +4,26 @@ import (
 	"bytes"
 	"io"
 	"testing"
-	"testing/fstest"
-
 	"github.com/approvals/go-approval-tests"
 	"github.com/isedaniel/blogrenderer"
 )
 
 func TestRender(t *testing.T) {
+    var (
+        post1Body = `# Body Title
+This is the body of the post.
+
+A little link [here](github.com/isedaniel).`
+    )
+
 	var (
 		p = blogrenderer.Post{
 			Title:       "Hello World",
+            Body: post1Body,
 			Description: "This is a description.",
 			Tags:        []string{"go", "tdd"},
 		}
 	)
-
-    const (
-        post1Body = `This is the body of the post.`
-    )
-    fsys := fstest.MapFS{
-        "post1.md": {Data: []byte(post1Body)},
-    }
 
 	pr, err := blogrenderer.NewPostRenderer()
 	if err != nil {
