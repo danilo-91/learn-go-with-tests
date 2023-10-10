@@ -15,16 +15,6 @@ func TestSum(t *testing.T) {
 	})
 }
 
-func TestSumAll(t *testing.T) {
-	t.Run("sum each of an slice of int slices", func(t *testing.T) {
-		got := SumAll([]int{1, 2, 3}, []int{4, 5, 6})
-		want := []int{6, 15}
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("expected '%v' but got '%v'", want, got)
-		}
-	})
-}
-
 func TestSumAllTails(t *testing.T) {
 	t.Run("sum everything but the first element of a slice", func(t *testing.T) {
 		got := SumAllTails([]int{1, 2, 3}, []int{4, 5, 6})
