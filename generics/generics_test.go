@@ -38,6 +38,13 @@ func TestStack(t *testing.T) {
         v, _ = s.Pop()
         AssertEqual(t, v, 1)
         AssertTrue(t, s.IsEmpty())
+
+        // pop returns int instead of interface{}
+        s.Push(1)
+        s.Push(2)
+        first, _ := s.Pop()
+        second, _ := s.Pop()
+        AssertEqual(t, first + second, 3)
     })
 
     t.Run("string stack", func(t *testing.T){
