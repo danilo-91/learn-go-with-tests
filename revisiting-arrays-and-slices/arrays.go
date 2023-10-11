@@ -13,11 +13,11 @@ func SumAllTails(slices ...[]int) []int {
 			return append(acc, Sum(el[1:]))
 		}
 	}
-	return Reduce[[]int](slices, addTails, []int{})
+	return Reduce(slices, addTails, []int{})
 
 }
 
-func Reduce[A any](collection []A, fn func(A, A) A, initialValue A) A {
+func Reduce[A, B any](collection []B, fn func(A, B) A, initialValue A) A {
 	var acc = initialValue
 	for _, el := range collection {
 		acc = fn(acc, el)
@@ -31,14 +31,14 @@ type Transaction struct {
 }
 
 func BalanceFor(trs []Transaction, name string) float64 {
-    var balance float64
-    for _, t := range trs {
+    fn := func(currentBalance float64, t Transaction) float64 {
         if t.From == name {
-            balance -= t.Sum
+            return currentBalance - t.Sum
         }
         if t.To == name {
-            balance += t.Sum
+            return currentBalance + t.Sum
         }
+        return currentBalance
     }
-    return balance
+    return Reduce(trs, fn, 0.0)
 }
