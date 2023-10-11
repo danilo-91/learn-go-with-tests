@@ -46,3 +46,49 @@ func ExampleSum() {
 	fmt.Println(sum)
 	// Output: 25
 }
+
+func TestReduce(t *testing.T) {
+    t.Run("reduce with multiplication", func(t *testing.T) {
+        fn := func(acc, el int) int {
+            return acc * el
+        }
+
+        assertEqual(t, Reduce[int]([]int{1, 2, 3}, fn, 1), 6)
+    })
+
+    t.Run("reduce slice of strings", func(t *testing.T) {
+        fn := func(acc, el string) string {
+            return acc + el
+        }
+
+        assertEqual(t, Reduce[string]([]string{"a", "b", "c"}, fn, "."), ".abc")
+    })
+}
+
+func assertEqual[T comparable](t *testing.T, got, want T) {
+    t.Helper()
+    if got != want {
+        t.Errorf("expected '%+v', but got '%+v'", want, got)
+    }
+}
+
+func TestBadBank(t *testing.T) {
+    t.Run("sum transactions", func(t *testing.T) {
+        trs := []Transaction{
+            {
+                From: "Chris",
+                To: "Kata",
+                Sum: 100,
+            },
+            {
+                From: "Adil",
+                To: "Chris",
+                Sum: 25,
+            },
+        }
+
+        assertEqual(t, BalanceFor(trs, "Kata"), 100)
+        assertEqual(t, BalanceFor(trs, "Chris"), -75)
+        assertEqual(t, BalanceFor(trs, "Adil"), -25)
+    })
+}

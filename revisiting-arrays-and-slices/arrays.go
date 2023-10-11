@@ -17,10 +17,28 @@ func SumAllTails(slices ...[]int) []int {
 
 }
 
-func Reduce[A any](collection []A, acc func(A, A) A, initialValue A) A {
-	var result = initialValue
+func Reduce[A any](collection []A, fn func(A, A) A, initialValue A) A {
+	var acc = initialValue
 	for _, el := range collection {
-		result = acc(result, el)
+		acc = fn(acc, el)
 	}
-	return result
+	return acc
+}
+
+type Transaction struct {
+    From, To string
+    Sum float64
+}
+
+func BalanceFor(trs []Transaction, name string) float64 {
+    var balance float64
+    for _, t := range trs {
+        if t.From == name {
+            balance -= t.Sum
+        }
+        if t.To == name {
+            balance += t.Sum
+        }
+    }
+    return balance
 }
