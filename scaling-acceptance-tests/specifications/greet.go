@@ -1,8 +1,8 @@
 package specifications
 
 import (
-	"testing"
 	"github.com/alecthomas/assert/v2"
+	"testing"
 )
 
 type Greeter interface {
