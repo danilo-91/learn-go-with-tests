@@ -15,18 +15,18 @@ func TestGreeterServer(t *testing.T) {
 
 	req := testcontainers.ContainerRequest{
 		FromDockerfile: testcontainers.FromDockerfile{
-			Context: "../../.",
-			Dockerfile: "./cmd/httpserver/Dockerfile",
+			Context:       "../../.",
+			Dockerfile:    "./cmd/httpserver/Dockerfile",
 			PrintBuildLog: true,
 		},
-		ExposedPorts: []string{"8080:8080"},	
-		WaitingFor: wait.ForHTTP("/").WithPort("8080"),
+		ExposedPorts: []string{"8080:8080"},
+		WaitingFor:   wait.ForHTTP("/").WithPort("8080"),
 	}
 
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-			ContainerRequest: req,
-			Started: true,
-		})
+		ContainerRequest: req,
+		Started:          true,
+	})
 	assert.NoError(t, err)
 	t.Cleanup(func() {
 		assert.NoError(t, container.Terminate(ctx))
