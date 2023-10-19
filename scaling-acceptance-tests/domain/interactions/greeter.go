@@ -1,4 +1,4 @@
-package go_specs_greet
+package interactions
 
 func Greet(name string) string {
 	return "Hello, " + name

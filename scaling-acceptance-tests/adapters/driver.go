@@ -1,4 +1,4 @@
-package go_specs_greet
+package adapters
 
 import (
 	"io"
@@ -7,7 +7,7 @@ import (
 
 type Driver struct {
 	BaseURL string
-	Client *http.Client
+	Client  *http.Client
 }
 
 func (d Driver) Greet(name string) (string, error) {
