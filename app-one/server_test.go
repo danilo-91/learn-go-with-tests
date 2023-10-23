@@ -15,9 +15,7 @@ func TestGETPlayers(t *testing.T) {
 		main.PlayerServer(resp, req)
 		got := resp.Body.String()
 		want := "20"
-		if got != want {
-			t.Errorf("expected %q, but got %q", want, got)
-		}
+		assertString(t, got, want)
 	})
 
 	t.Run("returns Gabo score", func(t *testing.T) {
@@ -27,8 +25,13 @@ func TestGETPlayers(t *testing.T) {
 		main.PlayerServer(resp, req)
 		got := resp.Body.String()
 		want := "30"
-		if got != want {
-			t.Errorf("expected %q, but got %q", want, got)
-		}
+		assertString(t, got, want)
 	})
+}
+
+func assertString(t *testing.T, got, want string) {
+	t.Helper()
+	if got != want {
+		t.Errorf("expected %q, but got %q", want, got)
+	}
 }
