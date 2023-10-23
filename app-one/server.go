@@ -21,5 +21,6 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if score == 0 {
 		w.WriteHeader(http.StatusNotFound)
 	}
+
 	fmt.Fprint(w, score)
 }
