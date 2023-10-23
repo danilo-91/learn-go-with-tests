@@ -18,5 +18,17 @@ func TestGETPlayers(t *testing.T) {
 		if got != want {
 			t.Errorf("expected %q, but got %q", want, got)
 		}
-	})	
+	})
+
+	t.Run("returns Gabo score", func(t *testing.T) {
+		req, _ := http.NewRequest(http.MethodGet, "/players/Gabo", nil)
+		resp := httptest.NewRecorder()
+
+		main.PlayerServer(resp, req)
+		got := resp.Body.String()
+		want := "30"
+		if got != want {
+			t.Errorf("expected %q, but got %q", want, got)
+		}
+	})
 }
