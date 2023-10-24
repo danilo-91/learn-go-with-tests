@@ -9,10 +9,15 @@ import (
 
 type StubPlayerStore struct {
 	scores map[string]int
+	addScoreCalls []string
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
 	return s.scores[name]
+}
+
+func (s *StubPlayerStore) RecordAddScoreCall(name string) {
+	s.addScoreCalls = append(s.addScoreCalls, name)
 }
 
 func TestGETPlayers(t *testing.T) {
@@ -21,6 +26,7 @@ func TestGETPlayers(t *testing.T) {
 			"Danilo": 20,
 			"Gabo":   25,
 		},
+		nil,
 	}
 	server := &main.PlayerServer{&store}
 
@@ -62,16 +68,21 @@ func TestGETPlayers(t *testing.T) {
 func TestPOSTScores(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{},
+		nil,
 	}
 	server := &main.PlayerServer{&store}
 
-	t.Run("returns accepted on valid POST", func(t *testing.T) {
+	t.Run("returns accepted / call addScore on valid POST", func(t *testing.T) {
 		req, _ := http.NewRequest(http.MethodPost, "/players/Danilo", nil)
 		resp := httptest.NewRecorder()
 
 		server.ServeHTTP(resp, req)
 
 		assertStatusCode(t, resp.Code, http.StatusAccepted)
+
+		if len(store.addScoreCalls) < 1 {
+			t.Errorf("got %d calls, but expected 1", len(store.addScoreCalls))
+		}
 	})
 }
 
