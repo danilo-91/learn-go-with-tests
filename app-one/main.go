@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type MemoryStorage struct {}
+type MemoryStorage struct{}
 
 func (m *MemoryStorage) GetPlayerScore(name string) int {
 	return 123

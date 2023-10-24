@@ -19,7 +19,7 @@ func TestGETPlayers(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{
 			"Danilo": 20,
-			"Gabo": 25,
+			"Gabo":   25,
 		},
 	}
 	server := &main.PlayerServer{&store}
@@ -90,7 +90,6 @@ func assertStatusCode(t *testing.T, got, want int) {
 }
 
 func newScoreRequest(name string) *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, "/players/" + name, nil)
+	req, _ := http.NewRequest(http.MethodGet, "/players/"+name, nil)
 	return req
 }
-	
