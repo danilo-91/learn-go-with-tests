@@ -16,17 +16,17 @@ type PlayerServer struct {
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	player := playerName(r)
 
 	switch r.Method {
 	case http.MethodGet:
-		p.getScore(w, r)
+		p.getScore(w, player)
 	case http.MethodPost:
-		p.setScore(w, r)
+		p.setScore(w, player)
 	}
 }
 
-func (p *PlayerServer) getScore(w http.ResponseWriter, r *http.Request) {
-	player := playerName(r)
+func (p *PlayerServer) getScore(w http.ResponseWriter, player string) {
 	score := p.Store.GetPlayerScore(player)
 
 	if score == 0 {
@@ -36,8 +36,7 @@ func (p *PlayerServer) getScore(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, score)
 }
 
-func (p *PlayerServer) setScore(w http.ResponseWriter, r *http.Request) {
-	player := playerName(r)
+func (p *PlayerServer) setScore(w http.ResponseWriter, player string) {
 	p.Store.RecordAddScoreCall(player)
 	w.WriteHeader(http.StatusAccepted)
 }
