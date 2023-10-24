@@ -90,6 +90,22 @@ func TestPOSTScores(t *testing.T) {
 	})
 }
 
+func TestRecordingWinsAndRetrieving(t *testing.T) {
+	store := main.MemoryStorage{}
+	server := main.PlayerServer{&store}
+	player := "Danilo"
+
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+
+	resp := httptest.NewRecorder()
+	server.ServeHTTP(resp, newScoreRequest(player))
+	assertStatusCode(t, resp.Code, http.StatusOK)
+	assertString(t, resp.Body.String(), "3")
+}
+
+
 func assertString(t *testing.T, got, want string) {
 	t.Helper()
 	if got != want {
@@ -106,5 +122,10 @@ func assertStatusCode(t *testing.T, got, want int) {
 
 func newScoreRequest(name string) *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, "/players/"+name, nil)
+	return req
+}
+
+func newPostWinRequest(name string) *http.Request {
+	req, _ := http.NewRequest(http.MethodPost, "/players/" + name, nil)
 	return req
 }
