@@ -81,7 +81,11 @@ func TestPOSTScores(t *testing.T) {
 		assertStatusCode(t, resp.Code, http.StatusAccepted)
 
 		if len(store.addScoreCalls) < 1 {
-			t.Errorf("got %d calls, but expected 1", len(store.addScoreCalls))
+			t.Fatalf("got %d calls, but expected 1", len(store.addScoreCalls))
+		}
+
+		if store.addScoreCalls[0] != "Danilo" {
+			t.Errorf("wrong stored player name, got %q, but expected %q", store.addScoreCalls[0], "Danilo")
 		}
 	})
 }
