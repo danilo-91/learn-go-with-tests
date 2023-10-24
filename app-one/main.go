@@ -11,6 +11,9 @@ func (m *MemoryStorage) GetPlayerScore(name string) int {
 	return 123
 }
 
+func (m *MemoryStorage) RecordAddScoreCall(name string) {
+}
+
 func main() {
 	server := &PlayerServer{&MemoryStorage{}}
 	handler := http.HandlerFunc(server.ServeHTTP)
