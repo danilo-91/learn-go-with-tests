@@ -91,8 +91,8 @@ func TestPOSTScores(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrieving(t *testing.T) {
-	store := main.MemoryStorage{}
-	server := main.PlayerServer{&store}
+	store := main.NewMemoryStorage()
+	server := main.PlayerServer{store}
 	player := "Danilo"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
