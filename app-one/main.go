@@ -16,7 +16,7 @@ func (m *MemoryStorage) GetPlayerScore(name string) int {
 	return m.storage[name]
 }
 
-func (m *MemoryStorage) RecordAddScoreCall(name string) {
+func (m *MemoryStorage) RecordWin(name string) {
 	m.storage[name]++
 }
 

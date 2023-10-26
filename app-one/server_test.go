@@ -16,7 +16,7 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 	return s.scores[name]
 }
 
-func (s *StubPlayerStore) RecordAddScoreCall(name string) {
+func (s *StubPlayerStore) RecordWin(name string) {
 	s.addScoreCalls = append(s.addScoreCalls, name)
 }
 

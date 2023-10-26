@@ -8,7 +8,7 @@ import (
 
 type PlayerStore interface {
 	GetPlayerScore(name string) int
-	RecordAddScoreCall(name string)
+	RecordWin(name string)
 }
 
 type PlayerServer struct {
@@ -37,7 +37,7 @@ func (p *PlayerServer) getScore(w http.ResponseWriter, player string) {
 }
 
 func (p *PlayerServer) setScore(w http.ResponseWriter, player string) {
-	p.Store.RecordAddScoreCall(player)
+	p.Store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }
 
